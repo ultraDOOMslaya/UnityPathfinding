@@ -30,6 +30,7 @@ public class HexGameUI : MonoBehaviour {
 				grid.FindPath(selectedUnit.Location, currentCell);
 			}
 			else {
+
 				grid.ClearPath();
 			}
 		}

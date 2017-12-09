@@ -37,6 +37,8 @@ public class HexUnit : MonoBehaviour {
 
 	float orientation;
 
+
+	// This may need a more deterministic solution.
 	IEnumerator TravelPath () {
 		for (int i = 1; i < pathToTravel.Count; i++) {
 			Vector3 a = pathToTravel[i - 1].Position;

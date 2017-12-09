@@ -1024,7 +1024,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &1385859524
 Transform:
@@ -1992,5 +1992,5 @@ MonoBehaviour:
   - {r: 0.07396196, g: 0.21853216, b: 0.83823526, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
   hexGrid: {fileID: 1571186511}
-  unitPrefab: {fileID: 114675564674013892, guid: 45194fad2044a42ffad755c791ef0ad7,
+  unitPrefab: {fileID: 114349368751282926, guid: fb944ce60f54a4d06b41d58b544d1d6f,
     type: 2}
