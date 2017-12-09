@@ -7,21 +7,32 @@ public class HexMapEditor : MonoBehaviour {
 
 	public HexGrid hexGrid;
 
+	public HexUnit unitPrefab;
+
 	private Color activeColor;
 
-	HexCell searchFromCell, searchToCell;
+	//HexCell searchFromCell, searchToCell;
 
 	void Awake () {
 		SelectColor(0);
 	}
 
 	void Update () {
-		if (
-			Input.GetMouseButton(0) &&
-			!EventSystem.current.IsPointerOverGameObject()
-		) {
-			HandleInput();
+		if (!EventSystem.current.IsPointerOverGameObject()) {
+			if (Input.GetMouseButton(0)) {
+				HandleInput();
+				return;
+			}
+			if (Input.GetKeyDown(KeyCode.U)) {
+				if (Input.GetKey(KeyCode.LeftShift)) {
+					DestroyUnit();
+				}
+				else {
+					CreateUnit();
+				}
+			}
 		}
+		//previousCell = null;
 	}
 
 	// Throw this method call in HandleInput to get it working for debugging
@@ -31,40 +42,46 @@ public class HexMapEditor : MonoBehaviour {
 		//Debug.Log("touched at " + coordinates.ToString());
 	}
 
+	void HandleInput () {
+		HexCell currentCell = GetCellUnderCursor();
+//		if (Input.GetKey (KeyCode.LeftShift) && searchToCell != currentCell) {
+//			if (searchFromCell != currentCell) {
+//				if (searchFromCell) {
+//					searchFromCell.DisableHighlight ();
+//				}
+//				searchFromCell = currentCell;
+//				currentCell.UpdateDistanceLabel ();
+//				searchFromCell.EnableHighlight (Color.blue);
+//				if (searchToCell) {
+//					hexGrid.FindPath (searchFromCell, searchToCell);
+//				}
+//			}
+//		} else if (searchFromCell && searchFromCell != currentCell) {
+//			if (searchFromCell != currentCell) {
+//				searchToCell = currentCell;
+//				searchToCell.UpdateDistanceLabel ();
+//				hexGrid.FindPath (searchFromCell, searchToCell);
+//			}
+//		}
+	}
+
 	HexCell GetCellUnderCursor () {
 		return
 			hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 	}
 
-	void HandleInput () {
-		HexCell currentCell = GetCellUnderCursor();
-		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-		RaycastHit hit;
-		if (Input.GetKey (KeyCode.LeftShift) && searchToCell != currentCell) {
-			if (searchFromCell != currentCell) {
-				if (searchFromCell) {
-					searchFromCell.DisableHighlight ();
-				}
-				searchFromCell = currentCell;
-				currentCell.UpdateDistanceLabel ();
-				searchFromCell.EnableHighlight (Color.blue);
-				if (searchToCell) {
-					hexGrid.FindPath (searchFromCell, searchToCell);
-				}
-			}
-		} 
-//		else if (Physics.Raycast(inputRay, out hit)) {
-//			//hexGrid.ColorCell(hit.point, activeColor);
-//			//Debug.Log("x is: " + currentCell.coordinates.X + " and y is: " + currentCell.coordinates.Z);
-//			hexGrid.FindPath(currentCell);
-//		}
-		else if (searchFromCell && searchFromCell != currentCell) {
-			if (searchFromCell != currentCell) {
-				searchToCell = currentCell;
-				searchToCell.UpdateDistanceLabel ();
-				hexGrid.FindPath (searchFromCell, searchToCell);
-			}
+	void CreateUnit () {
+		HexCell cell = GetCellUnderCursor();
+		if (cell && !cell.Unit) {
+			hexGrid.AddUnit(
+				Instantiate(unitPrefab), cell
+			);
 		}
+	}
+
+	void DestroyUnit () {
+		HexCell cell = GetCellUnderCursor();
+		hexGrid.RemoveUnit(cell);
 	}
 
 	public void SelectColor (int index) {

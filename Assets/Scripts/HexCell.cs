@@ -19,6 +19,8 @@ public class HexCell : MonoBehaviour {
 
 	public int SearchPhase { get; set; }
 
+	public HexUnit Unit { get; set; }
+
 	int distance;
 
 	[SerializeField]
@@ -32,6 +34,12 @@ public class HexCell : MonoBehaviour {
 	public void DisableDistanceLabel () {
 		Text label = uiRect.GetComponent<Text>();
 		label.text = "";
+	}
+
+	public Vector3 Position {
+		get {
+			return transform.localPosition;
+		}
 	}
 
 	public int Distance {

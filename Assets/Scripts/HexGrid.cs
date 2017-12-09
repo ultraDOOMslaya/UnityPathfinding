@@ -18,6 +18,7 @@ public class HexGrid : MonoBehaviour {
 	Canvas gridCanvas;
 	HexMesh hexMesh;
 	HexCell currentPathFrom, currentPathTo;
+	List<HexUnit> units = new List<HexUnit>();
 
 	bool currentPathExists;
 	int searchFrontierPhase;
@@ -80,6 +81,9 @@ public class HexGrid : MonoBehaviour {
 				HexCell neighbor = current.GetNeighbor(d);
 				if (neighbor == null ||
 					neighbor.SearchPhase > searchFrontierPhase) {
+					continue;
+				}
+				if (neighbor.Unit) {
 					continue;
 				}
 				int distance = current.Distance;
@@ -147,7 +151,7 @@ public class HexGrid : MonoBehaviour {
 		currentPathTo.EnableHighlight(Color.red);
 	}
 
-	void ClearPath () {
+	public void ClearPath () {
 		if (currentPathExists) {
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
@@ -160,12 +164,32 @@ public class HexGrid : MonoBehaviour {
 		currentPathFrom = currentPathTo = null;
 	}
 
+	void ClearUnits () {
+		for (int i = 0; i < units.Count; i++) {
+			units[i].Die();
+		}
+		units.Clear();
+	}
+
 	public HexCell GetCell (Ray ray) {
 		RaycastHit hit;
 		if (Physics.Raycast(ray, out hit)) {
 			return GetCell(hit.point);
 		}
 		return null;
+	}
+
+	public void AddUnit (HexUnit unit, HexCell location) {
+		units.Add(unit);
+		unit.transform.SetParent(transform, false);
+		unit.Location = location;
+	}
+
+	public void RemoveUnit (HexCell cell) {
+		if (cell && cell.Unit) {
+			units.Remove(cell.Unit);
+			cell.Unit.Die();
+		}
 	}
 
 	public HexCell GetCell (Vector3 position) {
@@ -185,5 +209,24 @@ public class HexGrid : MonoBehaviour {
 			return null;
 		}
 		return cells[x + z * width];
+	}
+
+	public bool HasPath {
+		get {
+			return currentPathExists;
+		}
+	}
+
+	public List<HexCell> GetPath () {
+		if (!currentPathExists) {
+			return null;
+		}
+		List<HexCell> path = ListPool<HexCell>.Get();
+		for (HexCell c = currentPathTo; c != currentPathFrom; c = c.PathFrom) {
+			path.Add(c);
+		}
+		path.Add(currentPathFrom);
+		path.Reverse ();
+		return path;
 	}
 }
